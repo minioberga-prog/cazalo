@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cazalo Convertidor V6</title>
+<style>
+:root{--yellow:#FFD400;--green:#19B86B;--bg:#0b0b0b;--card:#171717;--line:#303030;--muted:#a7a7a7}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#fff;font-family:Arial,Helvetica,sans-serif}.wrap{max-width:1120px;margin:auto;padding:22px 16px 50px}.head{display:flex;align-items:center;gap:12px;margin-bottom:18px}.logo{width:52px;height:52px;border-radius:50%;background:var(--yellow);color:#111;display:grid;place-items:center;font-size:28px;font-weight:900}h1{font-size:25px;margin:0}.head p{margin:4px 0;color:var(--muted)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}@media(max-width:850px){.grid{grid-template-columns:1fr}}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:16px}.badge{display:inline-block;background:#272727;border-radius:999px;padding:5px 9px;font-size:11px;color:#ddd;margin-bottom:9px}h2{font-size:18px;margin:0 0 12px}.drop{display:block;border:2px dashed #444;border-radius:14px;padding:30px 18px;text-align:center;cursor:pointer}.drop:hover,.drop.drag{border-color:var(--yellow);background:#1d1d1d}.drop input{display:none}.drop b{font-size:16px}.preview{display:none;width:100%;max-height:300px;object-fit:contain;background:#080808;border-radius:12px;margin-top:12px}label{display:block;color:var(--muted);font-size:12px;margin:9px 0 5px}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(max-width:500px){.row{grid-template-columns:1fr}}input,select{width:100%;background:#0c0c0c;border:1px solid #3a3a3a;border-radius:9px;color:#fff;padding:10px;font:inherit}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}button{border:0;border-radius:10px;padding:11px 15px;font-weight:800;cursor:pointer;background:var(--yellow);color:#111}button:disabled{opacity:.45;cursor:not-allowed}button.secondary{background:#2b2b2b;color:#fff}.status{min-height:20px;color:var(--muted);font-size:13px;margin-top:9px}.ok{color:#63e38f}.err{color:#ff8f8f}.warn{color:#ffd36b}.progress{height:7px;background:#333;border-radius:99px;overflow:hidden;margin-top:10px}.progress i{display:block;height:100%;width:0;background:var(--yellow);transition:width .2s}.canvasWrap{background:#080808;border-radius:14px;padding:8px;overflow:auto}.canvasWrap canvas{display:block;width:min(100%,540px);height:auto;margin:auto;border-radius:10px}.controls{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}@media(max-width:650px){.controls{grid-template-columns:1fr}}.hint{font-size:12px;color:#999;line-height:1.5}.checks{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:#ddd;margin-top:10px}.checks label{margin:0;color:#ddd}.small{font-size:11px;color:#777;line-height:1.45}.method{margin-top:12px;padding:10px 12px;border-radius:10px;background:#111;border:1px solid #292929;font-size:12px;color:#bbb}.method b{color:#fff}.pill{display:inline-block;padding:3px 7px;border-radius:999px;background:#292929;color:#ddd;margin-left:5px}.debug{font-size:11px;color:#777;margin-top:6px;word-break:break-word}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="head"><div class="logo">C</div><div><h1>Cazalo Convertidor V6</h1><p>Captura de Mercado Libre → producto recortado → diseño Cazalo.</p></div></header>
+
+<div class="grid">
+<section class="card">
+<span class="badge">PASO 1</span><h2>Subí una captura</h2>
+<label id="drop" class="drop" for="file">📸<br><b>Elegir captura de Mercado Libre</b><br><span class="hint">También podés arrastrar y soltar una imagen acá.</span><input id="file" type="file" accept="image/png,image/jpeg,image/webp"></label>
+<img id="preview" class="preview" alt="Vista previa">
+<div class="progress"><i id="bar"></i></div><div id="status" class="status"></div>
+<div class="actions"><button id="process" disabled>🤖 Detectar + procesar</button><button id="reset" class="secondary">Limpiar</button></div>
+<div class="checks"><label><input id="useOCR" type="checkbox" checked> Leer datos automáticamente</label><label><input id="useBG" type="checkbox" checked> Quitar fondo automáticamente</label></div>
+<div class="method"><b>Fondo automático:</b> IA cuando está disponible. Si la IA falla, V5 usa un <b>removedor de fondo blanco de respaldo</b> para que el proceso no se corte. Si abrís el HTML con doble clic, la IA puede omitirse y se usa el respaldo directamente.</div>
+<p class="small">El OCR y la IA pueden usar internet para descargar sus modelos. El respaldo de fondo funciona dentro del navegador y no necesita una API ni una clave.</p>
+</section>
+
+<section class="card">
+<span class="badge">PASO 2</span><h2>Revisá los datos</h2>
+<div class="row"><div><label>Precio actual</label><input id="price" placeholder="$72.540"></div><div><label>Descuento</label><input id="discount" placeholder="46% OFF"></div></div>
+<label>Precio anterior</label><input id="old" placeholder="$125.000">
+<label>Producto</label><input id="title" placeholder="Nombre del producto">
+<label>Código Mercado Libre</label><input id="code" placeholder="K9QPB9-2Y6J">
+<label>Link afiliado</label><input id="link" placeholder="https://meli.la/...">
+<div class="actions"><button id="update">✨ Actualizar diseño</button></div>
+</section>
+</div>
+
+<section class="card"><span class="badge">PASO 3</span><h2>Resultado estilo Cazalo</h2><div class="canvasWrap"><canvas id="canvas" width="1080" height="1350"></canvas></div><div class="actions"><button id="download">⬇️ Guardar PNG</button></div></section>
+
+<section class="card"><span class="badge">AJUSTE MANUAL</span><h2>Solo si el automático necesita ayuda</h2><div class="controls"><div><label>Mover horizontal</label><input id="moveX" type="range" min="-250" max="250" value="0"></div><div><label>Mover vertical</label><input id="moveY" type="range" min="-250" max="250" value="0"></div><div><label>Tamaño</label><input id="scale" type="range" min="60" max="140" value="100"></div></div><div class="actions"><button id="auto" class="secondary">↺ Restablecer automático</button></div></section>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+let file=null,source=null,product=null,ocrLoaded=null,bgLoaded=null,productMode='';
+function setStatus(t,cls=''){ $('status').className='status '+cls; $('status').innerHTML=t; }
+function progress(n){$('bar').style.width=Math.max(0,Math.min(100,n))+'%'}
+function clean(s){return(s||'').replace(/\s+/g,' ').trim()}
+function loadImage(f){return new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=reject;im.src=URL.createObjectURL(f)})}
+
+function parseOCR(data){
+  const text=data.text||''; const lines=(data.lines||[]).map(x=>({text:clean(x.text),conf:x.conf||0,top:x.bbox?.y0||0})).filter(x=>x.text);
+  const all=lines.map(x=>x.text).join(' ');
+  const priceMatches=[...all.matchAll(/\$\s*[\d.]+(?:,\d+)?/g)].map(m=>({v:m[0].replace(/\s/g,''),i:m.index||0}));
+  const offs=[...all.matchAll(/\b\d{1,2}\s*%\s*OFF\b/ig)].map(m=>m[0]);
+  const codes=[...all.matchAll(/\b[A-Z0-9]{4,10}-[A-Z0-9]{3,10}\b/g)].map(m=>m[0]);
+  const bad=/^(mercado libre|comprar|agregar|envío|envio|calificaciones|opiniones|características|caracteristicas|descripción|descripcion|cuotas|publicidad|mejor precio|en cuotas|stock disponible|cantidad|ver los medios|ver más|ver mas)/i;
+  const candidates=lines.filter(x=>x.text.length>12&&!/\$\s*[\d.]+/.test(x.text)&&!/%\s*OFF/i.test(x.text)&&!bad.test(x.text)&&x.conf>=25).sort((a,b)=>b.text.length-a.text.length);
+  let title=(candidates[0]?.text||'').replace(/\s{2,}/g,' ').trim();
+  // Prefer a title-like line near the top of the Mercado Libre gallery/details area.
+  const titleNearTop=lines.filter(x=>x.top<Math.max(650,(source?.naturalHeight||1000)*.48)&&x.text.length>16&&!bad.test(x.text)&&!/%\s*OFF/i.test(x.text)&&!/^\$/.test(x.text)).sort((a,b)=>b.text.length-a.text.length)[0];
+  if(titleNearTop) title=titleNearTop.text;
+  // In ML screenshots the main price is often the price closest to the words "Mejor precio". Otherwise use the last reasonable price.
+  let price='';let old='';
+  const better=/mejor precio/i.test(all);
+  if(better){const idx=all.search(/mejor precio/i);const after=all.slice(idx);const m=after.match(/\$\s*[\d.]+(?:,\d+)?/);if(m)price=m[0].replace(/\s/g,'')}
+  if(!price) price=priceMatches.length?priceMatches[priceMatches.length-1].v:'';
+  if(priceMatches.length>1){old=priceMatches[0].v;if(old===price&&priceMatches[1])old=priceMatches[1].v}
+  return {price,old,discount:offs[0]||'',code:codes[0]||'',title:title||'Producto Cazalo'};
+}
+
+function detectProductCrop(im){
+  const W=im.naturalWidth,H=im.naturalHeight;
+  // Galería de ML: zona izquierda/central. Ajuste para capturas más verticales.
+  let x=W*.025,y=H*.19,w=W*.68,h=H*.61;
+  if(H/W>1.65){y=H*.20;h=H*.56}
+  return {x,y,w,h};
+}
+function cropCanvas(im,r){const c=document.createElement('canvas');c.width=Math.max(1,Math.round(r.w));c.height=Math.max(1,Math.round(r.h));c.getContext('2d').drawImage(im,r.x,r.y,r.w,r.h,0,0,c.width,c.height);return c}
+async function loadOCR(){if(ocrLoaded)return ocrLoaded;ocrLoaded=import('https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.esm.min.js');return ocrLoaded}
+async function loadBG(){if(bgLoaded)return bgLoaded;bgLoaded=import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.7.0/+esm');return bgLoaded}
+
+async function removeBackgroundAI(crop){
+  const lib=await loadBG();
+  const blob=await new Promise((resolve,reject)=>crop.toBlob(b=>b?resolve(b):reject(new Error('No se pudo crear el PNG temporal')),'image/png'));
+  const out=await lib.removeBackground(blob,{output:{format:'image/png'}});
+  return loadImage(out);
+}
+
+// Respaldo: elimina el fondo blanco/gris conectado a los bordes del recorte.
+// Está pensado para las galerías blancas típicas de Mercado Libre y no requiere IA.
+function removeWhiteBackground(crop){
+  const c=document.createElement('canvas');c.width=crop.width;c.height=crop.height;const ctx=c.getContext('2d',{willReadFrequently:true});ctx.drawImage(crop,0,0);
+  const img=ctx.getImageData(0,0,c.width,c.height),d=img.data,w=c.width,h=c.height;
+  const seen=new Uint8Array(w*h),q=new Int32Array(w*h);let head=0,tail=0;
+  function bg(x,y){const i=(y*w+x)*4,r=d[i],g=d[i+1],b=d[i+2];const mx=Math.max(r,g,b),mn=Math.min(r,g,b);return mx>218 && (mx-mn)<30 && ((r+g+b)/3)>222}
+  function push(x,y){const p=y*w+x;if(x<0||x>=w||y<0||y>=h||seen[p]||!bg(x,y))return;seen[p]=1;q[tail++]=p}
+  for(let x=0;x<w;x++){push(x,0);push(x,h-1)}for(let y=0;y<h;y++){push(0,y);push(w-1,y)}
+  while(head<tail){const p=q[head++],x=p%w,y=(p/w)|0;push(x+1,y);push(x-1,y);push(x,y+1);push(x,y-1)}
+  for(let p=0;p<w*h;p++)if(seen[p])d[p*4+3]=0;
+  ctx.putImageData(img,0,0);return c;
+}
+
+function alphaBounds(im){
+  const c=document.createElement('canvas');c.width=im.naturalWidth||im.width;c.height=im.naturalHeight||im.height;const ctx=c.getContext('2d');ctx.drawImage(im,0,0);const d=ctx.getImageData(0,0,c.width,c.height).data;let minX=c.width,minY=c.height,maxX=-1,maxY=-1;
+  for(let y=0;y<c.height;y++)for(let x=0;x<c.width;x++){if(d[(y*c.width+x)*4+3]>28){if(x<minX)minX=x;if(x>maxX)maxX=x;if(y<minY)minY=y;if(y>maxY)maxY=y}}
+  if(maxX<0)return c;const pad=Math.round(Math.max(maxX-minX,maxY-minY)*.045);minX=Math.max(0,minX-pad);minY=Math.max(0,minY-pad);maxX=Math.min(c.width-1,maxX+pad);maxY=Math.min(c.height-1,maxY+pad);const out=document.createElement('canvas');out.width=maxX-minX+1;out.height=maxY-minY+1;out.getContext('2d').drawImage(c,minX,minY,out.width,out.height,0,0,out.width,out.height);return out;
+}
+
+async function processFile(){
+  if(!file)return;$('process').disabled=true;progress(2);productMode='';
+  try{
+    source=await loadImage(file);progress(8);
+    if($('useOCR').checked){
+      setStatus('🔎 Leyendo precio, descuento, título y código...');const T=await loadOCR();
+      const result=await T.recognize(file,'spa',{logger:m=>{if(m.status==='recognizing text')progress(10+m.progress*32)}});
+      const p=parseOCR(result.data);$('price').value=p.price;$('old').value=p.old;$('discount').value=p.discount;$('code').value=p.code;$('title').value=p.title;
+    }
+    progress(48);const crop=cropCanvas(source,detectProductCrop(source));
+    if($('useBG').checked){
+      const localFile=location.protocol==='file:';
+      if(localFile){
+        setStatus('🪄 Modo local detectado: usando removedor de fondo de respaldo...','warn');
+        product=alphaBounds(removeWhiteBackground(crop));productMode='Respaldo local';
+      }else{
+        try{
+          setStatus('🪄 Quitando el fondo con IA... la primera vez puede tardar.');
+          const bg=await Promise.race([removeBackgroundAI(crop),new Promise((_,rej)=>setTimeout(()=>rej(new Error('La IA tardó demasiado')),45000))]);
+          product=alphaBounds(bg);productMode='IA';
+        }catch(aiErr){
+          console.warn('Fallo IA, usando respaldo:',aiErr);
+          setStatus('⚠️ La IA no respondió. Cambio automáticamente al removedor de respaldo...','warn');
+          await new Promise(r=>setTimeout(r,250));
+          product=alphaBounds(removeWhiteBackground(crop));productMode='Respaldo';
+        }
+      }
+    }else{product=crop;productMode='Sin quitar fondo'}
+    progress(92);render();progress(100);
+    const extra=productMode==='IA'?' con IA':productMode==='Respaldo'?' con respaldo':productMode==='Respaldo local'?' con respaldo local':'';
+    setStatus('<span class="ok">✓ Listo.</span> Producto recortado y centrado automáticamente'+extra+'.','ok');
+  }catch(err){
+    console.error(err);progress(0);setStatus('⚠️ No pude completar el procesamiento: '+clean(err?.message||String(err)),'err');
+  }finally{$('process').disabled=false}
+}
+
+function rounded(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
+function draw(){
+ const c=$('canvas'),ctx=c.getContext('2d'),W=1080,H=1350;ctx.clearRect(0,0,W,H);ctx.fillStyle='#242424';ctx.fillRect(0,0,W,H);
+ const price=clean($('price').value),old=clean($('old').value),off=clean($('discount').value),title=clean($('title').value)||'Producto Cazalo',code=clean($('code').value);ctx.textBaseline='middle';ctx.textAlign='center';
+ if(old){ctx.font='32px Arial';ctx.fillStyle='#aaa';ctx.fillText(old,540,98);ctx.strokeStyle='#777';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(462,90);ctx.lineTo(618,90);ctx.stroke()}
+ if(off){ctx.font='bold 34px Arial';const tw=ctx.measureText(off).width+54;ctx.fillStyle='#19B86B';rounded(ctx,205,150,tw,62,12);ctx.fill();ctx.textAlign='left';ctx.fillStyle='#fff';ctx.fillText(off,232,181)}
+ ctx.textAlign='center';ctx.font='bold 78px Arial';ctx.fillStyle='#fff';ctx.fillText(price||'$0',650,181);
+ ctx.font='30px Arial';ctx.fillStyle='#ddd';const words=title.split(' ');let line='',lines=[],max=800;for(const word of words){const test=line?line+' '+word:word;if(ctx.measureText(test).width>max){lines.push(line);line=word}else line=test}if(line)lines.push(line);let yy=270;for(const l of lines.slice(0,2)){ctx.fillText(l,540,yy);yy+=39}
+ if(product){const target={x:80,y:350,w:920,h:610},scale=(+$('scale').value)/100;let fit=Math.min(target.w/product.width,target.h/product.height)*scale;const dw=product.width*fit,dh=product.height*fit,mx=(+$('moveX').value)*1.3,my=(+$('moveY').value)*1.3;ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(product,target.x+(target.w-dw)/2+mx,target.y+(target.h-dh)/2+my,dw,dh)}
+ rounded(ctx,295,1035,490,158,18);ctx.fillStyle='rgba(65,65,65,.82)';ctx.fill();ctx.textAlign='left';ctx.font='24px Arial';ctx.fillStyle='#ddd';ctx.fillText('🏷  Pegá este código en tu',330,1073);ctx.fillText('   buscador de Mercado Libre',330,1108);rounded(ctx,350,1130,380,53,10);ctx.fillStyle='#f4f4f4';ctx.fill();ctx.textAlign='center';ctx.font='bold 27px Arial';ctx.fillStyle='#111';ctx.fillText(code||'CÓDIGO',540,1157);ctx.textAlign='right';ctx.font='bold 26px Arial';ctx.fillStyle='#fff';ctx.fillText('🛒 CAZALO',1010,1265);
+}
+function render(){draw()}
+function setFile(f){if(!f||!f.type.startsWith('image/'))return;file=f;$('preview').src=URL.createObjectURL(f);$('preview').style.display='block';$('process').disabled=false;setStatus('✓ Captura cargada.','ok');progress(0)}
+$('file').addEventListener('change',e=>setFile(e.target.files?.[0]));
+['dragenter','dragover'].forEach(ev=>$('drop').addEventListener(ev,e=>{e.preventDefault();$('drop').classList.add('drag')}));['dragleave','drop'].forEach(ev=>$('drop').addEventListener(ev,e=>{e.preventDefault();$('drop').classList.remove('drag')}));$('drop').addEventListener('drop',e=>setFile(e.dataTransfer.files?.[0]));$('process').onclick=processFile;$('update').onclick=render;['moveX','moveY','scale'].forEach(id=>$(id).oninput=render);$('auto').onclick=()=>{$('moveX').value=0;$('moveY').value=0;$('scale').value=100;render()};$('reset').onclick=()=>location.reload();$('download').onclick=()=>{const a=document.createElement('a');a.download='cazalo-producto.png';a.href=$('canvas').toDataURL('image/png');a.click()};render();
+</script>
+</body>
+</html>
